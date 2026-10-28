@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { supabase } from '../lib/supabase';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, CheckCircle2, ClipboardCheck, FileText, Landmark, ShieldAlert } from 'lucide-react';
 
@@ -24,6 +25,21 @@ const verificacoes = [
 
 export default function InserirComprovantePagamento() {
   const [marcados, setMarcados] = useState<number[]>([]);
+  const [telas, setTelas] = useState<Record<number, string>>({});
+  const [ampliada, setAmpliada] = useState<string | null>(null);
+  useEffect(() => {
+    let ativo = true;
+    void (async () => {
+      const resultado: Record<number, string> = {};
+      for (const pagina of [3, 4, 5, 6, 7, 8]) {
+        const { data } = await supabase.storage.from('pops-privados')
+          .createSignedUrl('inserir-comprovante/tela-' + pagina + '.webp', 300);
+        if (data?.signedUrl) resultado[pagina] = data.signedUrl;
+      }
+      if (ativo) setTelas(resultado);
+    })();
+    return () => { ativo = false; };
+  }, []);
   const alternar = (indice: number) => setMarcados(anteriores =>
     anteriores.includes(indice) ? anteriores.filter(i => i !== indice) : [...anteriores, indice]
   );
@@ -49,6 +65,12 @@ export default function InserirComprovantePagamento() {
               <div>
                 <h3 className="text-lg font-semibold text-slate-900">{etapa.titulo}</h3>
                 <p className="mt-2 text-sm leading-6 text-slate-600">{etapa.descricao}</p>
+                {telas[indice + 3] && (
+                  <button type="button" onClick={() => setAmpliada(telas[indice + 3])} className="mt-4 block w-full text-left">
+                    <img src={telas[indice + 3]} alt={'Tela original do POP, etapa ' + (indice + 1)} className="max-h-80 w-full rounded-xl border border-slate-200 object-contain" />
+                    <span className="mt-1 block text-xs font-semibold text-blue-700">Ampliar tela original</span>
+                  </button>
+                )}
                 <div className="mt-4 flex gap-2 rounded-xl bg-slate-50 p-3 text-sm text-slate-700">
                   <ShieldAlert className="mt-0.5 shrink-0 text-amber-600" size={18}/>
                   <span><strong>Conferência:</strong> {etapa.conferencia}</span>
@@ -73,6 +95,7 @@ export default function InserirComprovantePagamento() {
         </div>
         {marcados.length === verificacoes.length && <p className="mt-4 flex items-center gap-2 rounded-lg bg-emerald-50 p-3 text-sm font-semibold text-emerald-700"><CheckCircle2 size={18}/> Checklist concluído. Confira o processo antes de encaminhar.</p>}
       </section>
+      {ampliada && <div role="dialog" aria-modal="true" aria-label="Tela ampliada" className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-slate-950/90 p-4" onClick={() => setAmpliada(null)}><button type="button" className="mb-3 self-end rounded-lg bg-white px-4 py-2 font-semibold" onClick={() => setAmpliada(null)}>Fechar</button><img src={ampliada} alt="Tela original ampliada" className="max-h-[85vh] max-w-full object-contain"/></div>}
       <div className="flex gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900"><FileText size={20} className="shrink-0"/> Em caso de divergência entre os documentos, interrompa o fluxo e solicite orientação à unidade responsável.</div>
     </div>
   );

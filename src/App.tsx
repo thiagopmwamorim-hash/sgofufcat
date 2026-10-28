@@ -35,6 +35,7 @@ import ClassificadorOrcamentario from './pages/ClassificadorOrcamentario';
 import Checklist from './pages/Checklist';
 import DisponibilidadeOrcamentaria from './pages/DisponibilidadeOrcamentaria';
 import Empenho from './pages/Empenho';
+import InserirComprovantePagamento from './pages/InserirComprovantePagamento';
 import Usuarios from './pages/Usuarios';
 import ExecucaoOrcamentaria from './pages/ExecucaoOrcamentaria';
 import ImportarExecucaoOrcamentaria from './pages/ImportarExecucaoOrcamentaria';
@@ -301,6 +302,11 @@ export default function App() {
                   <Route
                     path="/checklist/empenho"
                     element={<Empenho />}
+                  />
+
+                  <Route
+                    path="/checklist/inserir-comprovante-pagamento"
+                    element={<InserirComprovantePagamento />}
                   />
 
                   {/* Administração */}

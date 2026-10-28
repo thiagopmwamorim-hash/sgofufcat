@@ -89,6 +89,11 @@ const quickLinks = [
     icon: FolderOpen,
     url: 'https://sei.ufcat.edu.br',
   },
+  {
+    label: 'SIRT',
+    icon: ExternalLink,
+    url: 'https://sirt-web.hatchable.site/login',
+  },
 ];
 
 export default function Sidebar() {

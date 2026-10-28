@@ -66,9 +66,8 @@ export default function InserirComprovantePagamento() {
                 <h3 className="text-lg font-semibold text-slate-900">{etapa.titulo}</h3>
                 <p className="mt-2 text-sm leading-6 text-slate-600">{etapa.descricao}</p>
                 {telas[indice + 3] && (
-                  <button type="button" onClick={() => setAmpliada(telas[indice + 3])} className="mt-4 block w-full text-left">
-                    <img src={telas[indice + 3]} alt={'Tela original do POP, etapa ' + (indice + 1)} className="max-h-80 w-full rounded-xl border border-slate-200 object-contain" />
-                    <span className="mt-1 block text-xs font-semibold text-blue-700">Ampliar tela original</span>
+                  <button type="button" onClick={() => setAmpliada(telas[indice + 3])} className="mt-4 inline-flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-sm font-semibold text-blue-700 transition-colors hover:bg-blue-100">
+                    <FileText size={16} /> Ver tela
                   </button>
                 )}
                 <div className="mt-4 flex gap-2 rounded-xl bg-slate-50 p-3 text-sm text-slate-700">

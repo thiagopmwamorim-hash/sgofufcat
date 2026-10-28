@@ -46,6 +46,16 @@ const guides: Guide[] = [
   path: '/checklist/empenho',
   },
   {
+    id: 'comprovante-pagamento',
+    number: '05',
+    title: 'Inserir Comprovante de Pagamento no SEI',
+    description: 'Conferência da instrução, consulta da NP/OP, anexação e encaminhamento para assinatura da SGOF.',
+    icon: FileSignature,
+    available: true,
+    detail: 'POP disponível',
+    path: '/checklist/inserir-comprovante-pagamento',
+  },
+  {
     id: 'liquidacao',
     number: '03',
     title: 'Liquidação',

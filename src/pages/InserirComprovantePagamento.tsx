@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, CheckCircle2, ClipboardCheck, FileText, Landmark, ShieldAlert } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, ClipboardCheck, FileText, Landmark, Monitor, ShieldAlert } from 'lucide-react';
 
 const etapas = [
   { titulo: 'Conferência da instrução no SEI', descricao: 'Abra a instrução de pagamento no SEI e confira fornecedor, valor do pagamento e retenções, quando houver.', conferencia: 'Não avance se o fornecedor ou o valor não corresponder à instrução de pagamento.' },
@@ -66,8 +66,8 @@ export default function InserirComprovantePagamento() {
                 <h3 className="text-lg font-semibold text-slate-900">{etapa.titulo}</h3>
                 <p className="mt-2 text-sm leading-6 text-slate-600">{etapa.descricao}</p>
                 {telas[indice + 3] && (
-                  <button type="button" onClick={() => setAmpliada(telas[indice + 3])} className="mt-4 inline-flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-sm font-semibold text-blue-700 transition-colors hover:bg-blue-100">
-                    <FileText size={16} /> Ver tela
+                  <button type="button" onClick={() => setAmpliada(telas[indice + 3])} className="mt-4 inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50">
+                    <Monitor size={16} /> Ver tela do procedimento
                   </button>
                 )}
                 <div className="mt-4 flex gap-2 rounded-xl bg-slate-50 p-3 text-sm text-slate-700">

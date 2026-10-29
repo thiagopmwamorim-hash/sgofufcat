@@ -24,7 +24,24 @@ const verificacoes = [
 ];
 
 export default function InserirComprovantePagamento() {
-  const [marcados, setMarcados] = useState<number[]>([]);
+  const [marcados, setMarcados] = useState<number[]>(() => {
+    try {
+      const salvo = window.localStorage.getItem('sgof-pop-comprovante-checklist-v1');
+      const dados: unknown = salvo ? JSON.parse(salvo) : [];
+      return Array.isArray(dados)
+        ? dados.filter((item): item is number => typeof item === 'number' && Number.isInteger(item) && item >= 0 && item < verificacoes.length)
+        : [];
+    } catch {
+      return [];
+    }
+  });
+  useEffect(() => {
+    try {
+      window.localStorage.setItem('sgof-pop-comprovante-checklist-v1', JSON.stringify(marcados));
+    } catch {
+      // O checklist permanece utilizável mesmo se o armazenamento estiver indisponível.
+    }
+  }, [marcados]);
   const [telas, setTelas] = useState<Record<number, string>>({});
   const [ampliada, setAmpliada] = useState<string | null>(null);
   useEffect(() => {
@@ -84,6 +101,10 @@ export default function InserirComprovantePagamento() {
           <h2 className="flex items-center gap-2 text-lg font-bold text-slate-900"><ClipboardCheck size={21} /> Checklist de conclusão</h2>
           <span className="text-sm font-semibold text-blue-700">{marcados.length} de {verificacoes.length} conferidos</span>
         </div>
+        <div className="mt-4 h-2 overflow-hidden rounded-full bg-slate-100" role="progressbar" aria-label="Progresso do checklist" aria-valuemin={0} aria-valuemax={verificacoes.length} aria-valuenow={marcados.length}>
+          <div className="h-full rounded-full bg-blue-600 transition-all" style={{ width: `${(marcados.length / verificacoes.length) * 100}%` }} />
+        </div>
+        <p className="mt-2 text-xs text-slate-500">Progresso salvo automaticamente neste navegador. Cada processo deve ser conferido individualmente; reinicie a lista antes de começar outro.</p>
         <div className="mt-4 space-y-3">
           {verificacoes.map((texto, indice) => (
             <label key={texto} className="flex cursor-pointer items-start gap-3 rounded-lg p-2 hover:bg-slate-50">
@@ -92,6 +113,7 @@ export default function InserirComprovantePagamento() {
             </label>
           ))}
         </div>
+        <div className="mt-4 flex justify-end"><button type="button" onClick={() => { if (window.confirm('Reiniciar as marcações do checklist para um novo processo?')) setMarcados([]); }} className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50">Reiniciar checklist</button></div>
         {marcados.length === verificacoes.length && <p className="mt-4 flex items-center gap-2 rounded-lg bg-emerald-50 p-3 text-sm font-semibold text-emerald-700"><CheckCircle2 size={18}/> Checklist concluído. Confira o processo antes de encaminhar.</p>}
       </section>
       {ampliada && <div role="dialog" aria-modal="true" aria-label="Tela ampliada" className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-slate-950/90 p-4" onClick={() => setAmpliada(null)}><button type="button" className="mb-3 self-end rounded-lg bg-white px-4 py-2 font-semibold" onClick={() => setAmpliada(null)}>Fechar</button><img src={ampliada} alt="Tela original ampliada" className="max-h-[85vh] max-w-full object-contain"/></div>}

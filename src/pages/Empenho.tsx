@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   AlertTriangle,
   ArrowLeft,
@@ -191,6 +191,28 @@ type Preview = {
 
 export default function Empenho() {
   const [preview, setPreview] = useState<Preview>(null);
+  const [concluidos, setConcluidos] = useState<string[]>(() => {
+    try {
+      const salvo = window.localStorage.getItem('sgof-pop-empenho-etapas-v1');
+      const dados: unknown = salvo ? JSON.parse(salvo) : [];
+      return Array.isArray(dados)
+        ? dados.filter((item): item is string => typeof item === 'string' && steps.some(step => step.number === item))
+        : [];
+    } catch {
+      return [];
+    }
+  });
+  useEffect(() => {
+    try {
+      window.localStorage.setItem('sgof-pop-empenho-etapas-v1', JSON.stringify(concluidos));
+    } catch {
+      // O POP continua disponível mesmo sem armazenamento local.
+    }
+  }, [concluidos]);
+  const alternarEtapa = (numero: string) => setConcluidos(anteriores =>
+    anteriores.includes(numero) ? anteriores.filter(item => item !== numero) : [...anteriores, numero]
+  );
+
 
   return (
     <>
@@ -270,6 +292,16 @@ export default function Empenho() {
             </p>
           </div>
 
+          <div className="mb-5 rounded-2xl border border-blue-100 bg-blue-50/60 p-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <p className="text-sm font-semibold text-blue-900">Progresso: {concluidos.length} de {steps.length} etapas concluídas</p>
+              <button type="button" onClick={() => { if (window.confirm('Reiniciar as etapas para um novo procedimento?')) setConcluidos([]); }} className="rounded-lg border border-blue-200 bg-white px-3 py-2 text-xs font-semibold text-blue-800 hover:bg-blue-50">Reiniciar checklist</button>
+            </div>
+            <div className="mt-3 h-2 overflow-hidden rounded-full bg-blue-100" role="progressbar" aria-label="Progresso do procedimento" aria-valuemin={0} aria-valuemax={steps.length} aria-valuenow={concluidos.length}>
+              <div className="h-full rounded-full bg-blue-600 transition-all" style={{ width: `${(concluidos.length / steps.length) * 100}%` }} />
+            </div>
+            <p className="mt-2 text-xs text-slate-600">Marcações salvas neste navegador. Reinicie antes de iniciar outro processo.</p>
+          </div>
           <div className="space-y-4">
             {steps.map((step) => {
               const Icon = step.icon;
@@ -302,6 +334,10 @@ export default function Empenho() {
                       <p className="mt-1 text-sm leading-6 text-slate-500">
                         {step.description}
                       </p>
+                      <label className="mt-4 inline-flex cursor-pointer items-center gap-2 rounded-lg bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700">
+                        <input type="checkbox" checked={concluidos.includes(step.number)} onChange={() => alternarEtapa(step.number)} className="h-4 w-4 accent-blue-600" />
+                        Etapa concluída
+                      </label>
 
                       {step.image && (
                         <button

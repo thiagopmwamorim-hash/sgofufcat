@@ -6,7 +6,8 @@ export default function ProcedimentoOperacional() {
   const { tipo } = useParams<{tipo:string}>();
   const pop = procedimentos[tipo || ''];
   const [concluidas, setConcluidas] = useState<number[]>([]);
-  const [imagem, setImagem] = useState<string | null>(null);
+  const [telas, setTelas] = useState<string[]>([]);
+  const [telaAtual, setTelaAtual] = useState(0);
   useEffect(() => {
     if (!pop) return;
     try {
@@ -40,11 +41,17 @@ export default function ProcedimentoOperacional() {
         <div className="min-w-0 flex-1"><span className="text-xs font-semibold text-blue-600">{etapa.sistema}</span><h3 className="mt-1 text-lg font-bold text-slate-900">{etapa.titulo}</h3><p className="mt-2 text-sm leading-6 text-slate-600">{etapa.descricao}</p>
           <div className="mt-3 rounded-lg bg-amber-50 p-3 text-sm text-amber-900"><strong>Conferência:</strong> {etapa.conferencia}</div>
           <div className="mt-4 flex flex-wrap items-center gap-4"><label className="inline-flex items-center gap-2 text-sm font-medium text-slate-700 cursor-pointer"><input type="checkbox" className="h-4 w-4 accent-blue-600" checked={concluidas.includes(i)} onChange={()=>alternar(i)}/> Etapa concluída</label>
-          {etapa.imagem && <button type="button" onClick={()=>setImagem(etapa.imagem || null)} className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-blue-700 hover:bg-blue-50"><Monitor size={16}/> Ver tela</button>}</div>
+          {(etapa.imagens?.length || etapa.imagem) && <button type="button" onClick={()=>{setTelas(etapa.imagens?.length ? etapa.imagens : etapa.imagem ? [etapa.imagem] : []);setTelaAtual(0);}} className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-blue-700 hover:bg-blue-50"><Monitor size={16}/> Ver tela</button>}</div>
         </div></div></article>)}
     </section>
     {concluidas.length===pop.etapas.length && <p className="flex items-center gap-2 rounded-xl bg-emerald-50 p-4 text-sm font-semibold text-emerald-800"><CheckCircle2 size={19}/> Todas as etapas foram marcadas. Confira o processo antes do encaminhamento.</p>}
     <aside className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900"><div className="flex gap-2"><AlertTriangle size={18} className="shrink-0"/><div><strong>Adaptação institucional — validação necessária.</strong> {pop.observacao} Referência: {pop.codigo}, HULW/UFPB, versão de 2022. Este guia não substitui POP vigente ou validação da chefia.</div></div></aside>
-    {imagem && <div role="dialog" aria-modal="true" aria-label="Tela do procedimento" className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/90 p-4" onClick={()=>setImagem(null)}><div className="max-h-[95vh] max-w-6xl" onClick={e=>e.stopPropagation()}><button type="button" onClick={()=>setImagem(null)} className="mb-3 ml-auto flex items-center gap-2 rounded-lg bg-white px-4 py-2 font-semibold"><X size={16}/> Fechar</button><img src={imagem} alt="Tela ilustrativa do procedimento" className="max-h-[85vh] max-w-full object-contain"/></div></div>}
+    {telas.length > 0 && <div role="dialog" aria-modal="true" aria-label="Telas do procedimento" className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/90 p-4" onClick={()=>setTelas([])}>
+      <div className="flex max-h-[95vh] w-full max-w-6xl flex-col gap-3" onClick={e=>e.stopPropagation()}>
+        <div className="flex items-center justify-between gap-3 text-white"><span className="text-sm font-semibold">Tela {telaAtual+1} de {telas.length}</span><button type="button" onClick={()=>setTelas([])} className="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2 font-semibold text-slate-900"><X size={16}/> Fechar</button></div>
+        <img src={telas[telaAtual]} alt={`Tela ${telaAtual+1} do procedimento`} className="max-h-[76vh] w-full object-contain" />
+        {telas.length > 1 && <div className="flex items-center justify-between gap-3"><button type="button" disabled={telaAtual===0} onClick={()=>setTelaAtual(i=>Math.max(0,i-1))} className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-slate-900 disabled:opacity-40">Anterior</button><button type="button" disabled={telaAtual===telas.length-1} onClick={()=>setTelaAtual(i=>Math.min(telas.length-1,i+1))} className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-slate-900 disabled:opacity-40">Próxima</button></div>}
+      </div>
+    </div>}
   </div>;
 }

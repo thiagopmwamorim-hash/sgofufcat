@@ -33,8 +33,8 @@ import BaseRetencoes from './pages/BaseRetencoes';
 import TiposEmpenho from './pages/TiposEmpenho';
 import ClassificadorOrcamentario from './pages/ClassificadorOrcamentario';
 import Checklist from './pages/Checklist';
+import ProcedimentoOperacional from './pages/ProcedimentoOperacional';
 import DisponibilidadeOrcamentaria from './pages/DisponibilidadeOrcamentaria';
-import Empenho from './pages/Empenho';
 import InserirComprovantePagamento from './pages/InserirComprovantePagamento';
 import Usuarios from './pages/Usuarios';
 import ExecucaoOrcamentaria from './pages/ExecucaoOrcamentaria';
@@ -300,8 +300,8 @@ export default function App() {
                   />
 
                   <Route
-                    path="/checklist/empenho"
-                    element={<Empenho />}
+                    path="/checklist/:tipo"
+                    element={<ProcedimentoOperacional />}
                   />
 
                   <Route
